@@ -1,5 +1,7 @@
-import { userRouter } from "./user.routes";
 
-export default indexRouter = {
-  userRouter,
+const userRoutes = require("#R/user.routes");
+
+
+exports.indexRouter = {
+  userRoutes,
 };

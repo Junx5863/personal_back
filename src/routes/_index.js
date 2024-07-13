@@ -1,10 +1,17 @@
-import Router from "express";
-import UserRoutes from "./user.routes.js";
+const express = require("express");
+const { indexRouter } = require("./_barrel");
+
+const routerApi = (app) => {
+    const router = express.Router();
+    app.use("/api/v1", router);
 
 
-const routerApi = Router();
 
-routerApi.use("/users", UserRoutes);
+    //publicas
+    router.use("/user", indexRouter.userRoutes);
 
+    //privadas
 
-export default routerApi;
+};
+
+module.exports = routerApi;
