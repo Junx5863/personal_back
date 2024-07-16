@@ -10,7 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.0"
   },
   "devDependencies": {
@@ -22,6 +24,7 @@
     "#C/*": "./src/controllers/*.js",
     "#MW/*": "./src/middlewares/*.js",
     "#H/*": "./src/helpers/*.js",
+    "#DB/*": "./src/config/*.js",
     "#SRC/*": "./src/*.js"
   }
 }

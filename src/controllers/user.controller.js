@@ -1,4 +1,4 @@
-
+const jwt = require("jsonwebtoken");
 
 const { httpError, httpSend } = require("#H/httpResponses");
 
@@ -7,15 +7,15 @@ const userSchema = require("#M/user.model");
 
 exports.createUser = async (req, res) => {
   try {
-    const { name, email, age } = req.body;
-    const user = new userSchema({ name, email, age });
+    const { name, email, password } = req.body;
+    const user = new userSchema({ name, email, password });
     await user.save();
     res.send({
       message: "User created",
     });
   } catch (error) {
     res.status(400).send({
-      error: "Error creating user",
+      error: `Error creating user ${error}` ,
     });
   }
 };
