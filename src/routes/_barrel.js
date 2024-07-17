@@ -1,7 +1,7 @@
 
-const userRoutes = require("#R/user.routes");
+import userRoutes from "./user.routes.js";
 
 
-exports.indexRouter = {
+export  const indexRouter  = {
   userRoutes,
 };

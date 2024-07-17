@@ -1,12 +1,13 @@
-const { Router } = require('express');
-const userController = require('#C/user.controller');
+
+import { Router } from 'express';
+import { userController } from '../controllers/user.controller.js';
 
 const router = Router();
 
 router.get('/', userController.getUsers);
-router.get('/users/:id', userController.getById);
-router.post('/', userController.createUser);
-router.put('/users/:id', userController.updateUser);
-router.delete('/users/:id', userController.deleteUser);
+router.get('/:id', userController.getById);
+router.post('/add_new_game', userController.addVideoGame);
+router.put('/update_game/:id', userController.updateVideoGame);
+router.delete('/delete_game/:id', userController.deleteGame);
 
-module.exports = router;
+export default router;

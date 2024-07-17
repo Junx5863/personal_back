@@ -1,5 +1,5 @@
-const express = require("express");
-const { indexRouter } = require("./_barrel");
+import express from "express";
+import { indexRouter } from "./_barrel.js";
 
 const routerApi = (app) => {
     const router = express.Router();
@@ -8,10 +8,10 @@ const routerApi = (app) => {
 
 
     //publicas
-    router.use("/user", indexRouter.userRoutes);
+    router.use("/product", indexRouter.userRoutes);
 
     //privadas
 
 };
 
-module.exports = routerApi;
+export default routerApi;

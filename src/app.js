@@ -1,5 +1,5 @@
-const express = require("express");
-const routerApi = require("#R/_index");
+import express from "express";
+import routerApi from "../src/routes/_index.js";
 
 console.log(`
   ██████ ▄▄▄█████▓ ▄▄▄       ██▀███  ▄▄▄█████▓   ▓█████▄ ▓█████ ██▒   █▓
