@@ -1,5 +1,5 @@
 import express from "express";
-import { indexRouter } from "./_barrel.js";
+import { videoGameRoutes, } from "./_barrel.js";
 
 const routerApi = (app) => {
     const router = express.Router();
@@ -8,7 +8,10 @@ const routerApi = (app) => {
 
 
     //publicas
-    router.use("/product", indexRouter.userRoutes);
+    router.use("/product", videoGameRoutes.userRoutes);
+
+
+    router.use("/carrito", videoGameRoutes.carritoRoutes);
 
     //privadas
 

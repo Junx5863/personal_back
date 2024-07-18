@@ -1,4 +1,4 @@
-import userSchema from "../models/user.model.js";
+
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -90,7 +90,9 @@ const getById = async (req, res) => {
   try {
     const { id } = req.params;
     //segun el archivo json importado se debe buscar el usuario por el id
-    const user = jsonData.video_games.find((user) => user.id === parseInt(id));
+    const user = videoGamesData.video_games.find(
+      (game) => game.id === parseInt(id)
+    );
     if (!user) {
       res.status(404).send({
         error: "User not found",

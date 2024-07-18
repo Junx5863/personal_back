@@ -1,0 +1,17 @@
+[
+  {
+    "id": "Carrito_1",
+    "products": [
+      {
+        "title": "Horizon Zero Down",
+        "platform": "PlayStation",
+        "price": "19.99",
+        "release_date": "2018-04-20",
+        "genre": "Action-adventure",
+        "description": "Melo de los melos",
+        "status": "Available",
+        "stock": 6
+      }
+    ]
+  }
+]

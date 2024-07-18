@@ -1,7 +1,9 @@
 
 import userRoutes from "./user.routes.js";
+import carritoRoutes from "./carrito.routes.js";
 
 
-export  const indexRouter  = {
+export const videoGameRoutes  = {
   userRoutes,
+  carritoRoutes
 };
