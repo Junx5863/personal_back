@@ -8,7 +8,7 @@ const routerApi = (app) => {
 
 
     //publicas
-    router.use("/user", indexRouter.userRoutes);
+    router.use("/session", indexRouter.userRoutes);
 
     //privadas
 

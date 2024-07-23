@@ -1,93 +1,92 @@
+const yup = require('yup');
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-
-const { httpError, httpSend } = require("#H/httpResponses");
-
 
 const userSchema = require("#M/user.model");
 
-exports.createUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    const user = new userSchema({ name, email, password });
-    await user.save();
-    res.send({
-      message: "User created",
-    });
-  } catch (error) {
-    res.status(400).send({
-      error: `Error creating user ${error}` ,
-    });
-  }
-};
+const loginSchema = yup.object().shape({
+  email: yup.string().required('El usuario es requerido'),
+  password: yup.string().required('La contraseña es requerida')
+});
 
-exports.getUsers = async (req, res) => {
-  try {
-    const users = await userSchema.find();
-    res.send(users);
-  } catch (error) {
-    res.status(400).send({
-      error: "Error getting users",
-    });
-  }
-};
 
-exports.getById = async (req, res) => {
+
+exports.registerUser = async (req, res) => {
   try {
-    const { id } = req.params;
-    const user = await userSchema.findById(id);
-    if (!user) {
-      res.status(404).send({
-        error: "User not found",
+    await req.body;
+    let hashedpass = crypto
+      .createHash("sha512")
+      .update(req.body.password)
+      .digest("hex");
+
+    let newUser = new userSchema({
+      firt_name: req.body.firt_name,
+      last_name: req.body.last_name,
+      age: req.body.age,
+      email: req.body.email,
+      password: hashedpass,
+    });
+
+    newUser
+      .save()
+      .then((data) => {
+        res.status(201).json({ data: data });
+      })
+      .catch((error) => {
+        res
+          .status(500)
+          .json({ error: `Error al registrar el usuario: ${error}` });
+        return;
       });
-    }
-    res.json(user);
   } catch (error) {
     res.status(400).send({
-      error: "Error getting user",
+      error: `Error creating user ${error}`,
     });
   }
 };
 
-exports.updateUser = async (req, res) => {
+exports.loginUsers = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { name, email, age } = req.body;
-    const userExist = await userSchema.findByIdAndUpdate(
-      id,
-      { name, email, age },
-      { new: true }
-    );
-    if (!userExist) {
-      res.status(404).send({
-        error: "User not found",
-      });
-    }
-    res.send({
-      message: "User updated",
-    });
-    res.json(userExist);
-  } catch (error) {
-    res.status(400).send({
-      error: "Error updating user",
-    });
-  }
-};
+    await loginSchema.validate(req.body);
 
-exports.deleteUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await userSchema.findByIdAndDelete(id);
-    if (!user) {
-      res.status(404).send({
-        error: "User not found",
+    let hashedpass = crypto
+      .createHash("sha512")
+      .update(req.body.password)
+      .digest("hex");
+
+    userSchema
+      .findOne({
+        email: req.body.email,
+        password: hashedpass,
+      })
+      .then((data) => {
+        let response = {
+          token: null,
+          msg: "",
+        };
+
+        if (data !== null) {
+          response.token = jwt.sign(
+            {
+              id: data._id,
+              email: data.email,
+            },
+            "__recret__",
+            { expiresIn: "12h" }
+          );
+        }
+        res.status(200).send({
+          data: response,
+        });
+      })
+      .catch((error) => {
+        res.status(500).send({
+          error: `Error al buscar usuario: ${error}`,
+        });
       });
-    }
-    res.send({
-      message: "User deleted",
-    });
   } catch (error) {
     res.status(400).send({
-      error: "Error deleting user",
+      error: `Error getting users ${error}`,
     });
   }
 };

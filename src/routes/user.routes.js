@@ -3,10 +3,7 @@ const userController = require('#C/user.controller');
 
 const router = Router();
 
-router.get('/', userController.getUsers);
-router.get('/users/:id', userController.getById);
-router.post('/add_new_user', userController.createUser);
-router.put('/users/:id', userController.updateUser);
-router.delete('/users/:id', userController.deleteUser);
+router.post('/login', userController.loginUsers); 
+router.post('/register', userController.registerUser);
 
 module.exports = router;
