@@ -21,6 +21,7 @@ const PORT = 3000;
 
 app.use(express.json());
 
+app.use(express.static("./public"));
 app.engine("handlebars", exphbs.engine({
   defaultLayout: "main",
   layoutsDir: "./src/views/layouts",

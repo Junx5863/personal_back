@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 const addGame = async () => {
-    const stock = document.getElementById('stock').value;
+    const stock = document.getElementById('gameStock').value;
     const name = document.getElementById('gameTitle').value;
     const price = document.getElementById('gamePrice').value;
     const status = document.getElementById('gameStock').value;
