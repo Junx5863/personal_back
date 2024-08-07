@@ -1,0 +1,18 @@
+<div class="container mt-5">
+    <div class="text-center">
+        <h1>{{title}}</h1>
+    </div>
+    <div class="row mt-4">
+        {{#each games}}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-primary">
+                <img src="{{this.image}}" class="card-img-top" alt="{{this.name}}">
+                <div class="card-body">
+                    <h5 class="card-title">{{this.name}}</h5>
+                    <p class="card-text">{{this.description}}</p>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>

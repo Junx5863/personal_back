@@ -1,5 +1,6 @@
 import express from "express";
-import { videoGameRoutes, } from "./_barrel.js";
+import { videoGameRoutes } from "./_barrel.js";
+
 
 const routerApi = (app) => {
     const router = express.Router();
@@ -14,6 +15,9 @@ const routerApi = (app) => {
     router.use("/carrito", videoGameRoutes.carritoRoutes);
 
     //privadas
+
+    //views
+    router.use("/", videoGameRoutes.listGames)
 
 };
 
