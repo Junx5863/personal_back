@@ -19,7 +19,7 @@ try {
 
 const getListGames = async (req, res) => {
   try {
-    res.render("index", { title: "Hello World", videoGamesPath })
+    res.render("index", { title: "Hello World", videoGamesPath: videoGamesData.video_games });
   } catch (error) {
     res.status(400).send({
       error: "Error getting users",

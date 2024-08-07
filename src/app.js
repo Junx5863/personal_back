@@ -21,15 +21,17 @@ const PORT = 3000;
 
 app.use(express.json());
 
-app.engine("handlebars", exphbs.engine());
+app.engine("handlebars", exphbs.engine({
+  defaultLayout: "main",
+  layoutsDir: "./src/views/layouts",
+  partialsDir: "./src/views/partials",
+}));
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
-app.use(express.static("public"));
 
-/* app.get("/view", async (req, res) => {
-  
-  res.render("index", { title: "Hello World" ,games});
-}); */
+app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
+
 
 routerApi(app);
 
