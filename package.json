@@ -23,9 +23,10 @@
     "#M/*": "./src/models/*.js",
     "#R/*": "./src/routes/*.js",
     "#C/*": "./src/controllers/*.js",
-    "#MW/*": "./src/middlewares/*.js",
+    "#MW/*": "./src/middleware/*.js",
     "#H/*": "./src/helpers/*.js",
     "#DB/*": "./src/config/*.js",
-    "#SRC/*": "./src/*.js"
+    "#SRC/*": "./src/*.js",
+    "#U/*": "./src/utils/*.js"
   }
 }
