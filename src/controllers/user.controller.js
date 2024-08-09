@@ -1,7 +1,6 @@
 const yup = require('yup');
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const { generateToken, verifyToken } = require("#U/jwt");
 
 const userSchema = require("#M/user.model");
 
@@ -26,7 +25,6 @@ exports.registerUser = async (req, res) => {
       age: req.body.age,
       email: req.body.email,
       password: hashedpass,
-      role: req.body.role,
     });
 
     newUser
@@ -77,9 +75,6 @@ exports.loginUsers = async (req, res) => {
             { expiresIn: "12h" }
           );
         }
-        const token = generateToken({ email: data.email, role: data.role, });
-        res.cookie("currentUser", token, { maxAge: 100000 });
-
         res.status(200).send({
           data: response,
         });
@@ -95,71 +90,3 @@ exports.loginUsers = async (req, res) => {
     });
   }
 };
-
-exports.currentData = async (req, res) => {
-  try {
-    const token = req.cookies.currentUser;
-    if (!token) {
-      return res.status(401).json({ error: "Sin sesion - No autorizado" });
-    }
-
-    const decoded = verifyToken(token);
-
-    userSchema
-      .findOne({
-        email: decoded.email,
-      })
-      .then((data) => {
-        res.status(200).send({
-          data: data,
-        });
-      })
-      .catch((error) => {
-        res.status(500).send({
-          error: `Error al buscar usuario: ${error}`,
-        });
-      });
-
-
-  } catch (error) {
-    res.status(400).send({
-      error: `Error getting users ${error}`,
-    });
-  }
-
-}
-
-
-exports.allData = async (req, res) => {
-  try {
-    userSchema
-      .find()
-      .then((data) => {
-        res.status(200).send({
-          data: data,
-        });
-      })
-      .catch((error) => {
-        res.status(500).send({
-          error: `Error al buscar usuarios: ${error}`,
-        });
-      });
-  } catch (error) {
-    res.status(400).send({
-      error: `Error getting users ${error}`,
-    });
-  }
-}
-
-exports.logout = async (req, res) => {
-  try {
-    res.clearCookie("currentUser");
-    res.status(200).send({
-      message: "Logout",
-    });
-  } catch (error) {
-    res.status(400).send({
-      error: `Error getting users ${error}`,
-    });
-  }
-}

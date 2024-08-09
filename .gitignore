@@ -2,9 +2,8 @@
 
 # Dependency directories
 
-**/node_modules/
-mongo_data
-**/.env
+node_modules/
+
 
 # Build directories
 dist/
