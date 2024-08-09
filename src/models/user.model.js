@@ -22,7 +22,14 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: true,
-    max: 128,
+    max: 20,
+  },
+  role: {
+    type: String ,
+    enum: ['admin', 'user'],
+    default: 'user',
+    required: true,
+
   },
 });
 
