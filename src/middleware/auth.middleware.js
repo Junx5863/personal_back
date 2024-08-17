@@ -26,25 +26,32 @@ exports.authenticate = async (req, res, next) => {
       role: decoded.role,
     };
 
-    next(); 
+    next();
   } catch (error) {
     res.status(400).send({
-      error: `No autorizado ${error}` ,
+      error: `No autorizado ${error}`,
     });
   }
 };
 
-
 exports.autorisations = (req, res, next) => {
-
-
-    const { role } = req.user;
-    if (role === "admin") {
-      next();
-    }else{
-        return res.status(401).json({
-            message: "No Autorizado"
-        });
-    }
-
+  const { role } = req.user;
+  if (role === "admin") {
+    next();
+  } else {
+    return res.status(401).json({
+      message: "No Autorizado",
+    });
+  }
 };
+
+exports.autorisationsClient = (req, res, next) => {
+  const { role } = req.user;
+  if (role === "client") {
+    next();
+  } else {
+    return res.status(401).json({
+      message: "No Autorizado",
+    });
+  }
+}

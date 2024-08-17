@@ -1,11 +1,8 @@
 const mongoose = require("mongoose");
-
-const host = "127.0.0.1";
-const port = "27017";
-const db = "test";
+const config = require("./config");
 
 exports.mongoConnect = () =>{
-    const mongoStringConnection = `mongodb://${host}:${port}/${db}`;
+    const mongoStringConnection = `mongodb://${config.mongoURI}:${config.port_db}/${config.DB_NAME}`;
     mongoose.set('strictQuery', true);
     mongoose.connect(mongoStringConnection);
     mongoose.Promise = global.Promise;

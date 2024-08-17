@@ -10,6 +10,11 @@ const routerApi = (app) => {
     //publicas
     router.use("/session", indexRouter.userRoutes);
 
+    router.use("/ticket", indexRouter.ticketRoutes);
+
+
+    router.use("/carrito", indexRouter.carritoRoutes);
+
     //privadas
 
 };

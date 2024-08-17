@@ -1,27 +1,26 @@
-const yup = require('yup');
+const yup = require("yup");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { generateToken, verifyToken } = require("#U/jwt");
 
+const emailer = require("#S/email");
+
 const userSchema = require("#M/user.model");
 
 const loginSchema = yup.object().shape({
-  email: yup.string().required('El usuario es requerido'),
-  password: yup.string().required('La contraseña es requerida')
+  email: yup.string().required("El usuario es requerido"),
+  password: yup.string().required("La contraseña es requerida"),
 });
-
-
 
 exports.registerUser = async (req, res) => {
   try {
-    await req.body;
-    let hashedpass = crypto
+    const hashedpass = crypto
       .createHash("sha512")
       .update(req.body.password)
       .digest("hex");
 
-    let newUser = new userSchema({
-      firt_name: req.body.firt_name,
+    const newUser = new userSchema({
+      first_name: req.body.first_name,
       last_name: req.body.last_name,
       age: req.body.age,
       email: req.body.email,
@@ -29,21 +28,24 @@ exports.registerUser = async (req, res) => {
       role: req.body.role,
     });
 
-    newUser
-      .save()
-      .then((data) => {
-        res.status(201).json({ data: data });
-      })
-      .catch((error) => {
-        res
-          .status(500)
-          .json({ error: `Error al registrar el usuario: ${error}` });
-        return;
-      });
-  } catch (error) {
-    res.status(400).send({
-      error: `Error creating user ${error}`,
+    const savedUser = await newUser.save();
+
+    res.status(201).json({
+      data: savedUser,
     });
+
+    const inforesponse = await emailer.sendEmail({ to: savedUser.email, userName: `${savedUser.first_name} ${savedUser.last_name}` } ).catch(() => {
+      res
+        .status(500)
+        .json({ error: `Error al enviar el correo de verificación` });
+    });
+
+    console.log("Message sent: %s", inforesponse);
+
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: `Error al registrar el usuario: ${error.message}` });
   }
 };
 
@@ -64,7 +66,7 @@ exports.loginUsers = async (req, res) => {
       .then((data) => {
         let response = {
           token: null,
-          msg: "",
+          msg: "Inicio exitoso.",
         };
 
         if (data !== null) {
@@ -77,8 +79,8 @@ exports.loginUsers = async (req, res) => {
             { expiresIn: "12h" }
           );
         }
-        const token = generateToken({ email: data.email, role: data.role, });
-        res.cookie("currentUser", token, { maxAge: 100000 });
+        const token = generateToken({ email: data.email, role: data.role });
+        res.cookie("currentUser", token, { maxAge: 18000000 });
 
         res.status(200).send({
           data: response,
@@ -119,16 +121,12 @@ exports.currentData = async (req, res) => {
           error: `Error al buscar usuario: ${error}`,
         });
       });
-
-
   } catch (error) {
     res.status(400).send({
       error: `Error getting users ${error}`,
     });
   }
-
-}
-
+};
 
 exports.allData = async (req, res) => {
   try {
@@ -149,7 +147,7 @@ exports.allData = async (req, res) => {
       error: `Error getting users ${error}`,
     });
   }
-}
+};
 
 exports.logout = async (req, res) => {
   try {
@@ -162,4 +160,4 @@ exports.logout = async (req, res) => {
       error: `Error getting users ${error}`,
     });
   }
-}
+};
