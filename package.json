@@ -33,6 +33,7 @@
     "#DB/*": "./src/config/*.js",
     "#MW/*": "./src/middleware/*.js",
     "#C/*": "./src/controllers/*.js",
-    "#S/*": "./src/services/*.js"
+    "#S/*": "./src/services/*.js",
+    "#DAO/*": "./src/Daos/*.js"
   }
 }

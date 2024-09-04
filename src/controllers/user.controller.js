@@ -1,10 +1,8 @@
 const yup = require("yup");
-const crypto = require("crypto");
-const jwt = require("jsonwebtoken");
 const { generateToken, verifyToken } = require("#U/jwt");
 
 const emailer = require("#S/email");
-const { userService, authService } = require("#S/users.services");
+const userService = require("#S/users.services");
 
 const userSchema = require("#M/user.model");
 
@@ -15,7 +13,7 @@ const loginSchema = yup.object().shape({
 
 exports.registerUser = async (req, res) => {
   try {
-    const userData = { // Create a user data object
+    const userData = { 
       first_name: req.body.first_name,
       last_name: req.body.last_name,
       age: req.body.age,
@@ -23,6 +21,7 @@ exports.registerUser = async (req, res) => {
       password: req.body.password,
       role: req.body.role,
     };
+    console.log(userData);
 
     const savedUser = await userService.registerUser(userData);
 
@@ -39,6 +38,13 @@ exports.registerUser = async (req, res) => {
         .json({ error: `Error al enviar el correo de verificación` });
     });
 
+    res.status(200).json({
+      data: {
+        message: "Usuario registrado con éxito.",
+        user: savedUser,
+      },
+    });
+
 
   } catch (error) {
     res
@@ -49,27 +55,27 @@ exports.registerUser = async (req, res) => {
 
 exports.loginUsers = async (req, res) => {
   try {
-    await loginSchema.validate(req.body); // Assuming validation is still needed
+    await loginSchema.validate(req.body); 
 
-    const { email, password } = req.body; // Destructuring for cleaner code
+    const { email, password } = req.body; 
 
-    const { token, user } = await authService.loginUser(email, password); // Call the service
+    const { token, user } = await userService.loginUser(email, password); 
 
-    res.cookie('currentUser', token, { maxAge: 18000000 }); // Set cookie
+    res.cookie('currentUser', token, { maxAge: 18000000 }); 
 
     res.status(200).json({
       data: {
         message: 'Inicio exitoso.',
         token,
-        user, // You can choose whether to return the user object or not based on your security requirements
+        user,
       },
     });
   } catch (error) {
     let message = 'Error al iniciar sesión.';
-    if (error.message === 'Invalid email or password') { // Handle specific error
+    if (error.message === 'Invalid email or password') { 
       message = 'Correo electrónico o contraseña incorrectos.';
     }
-    res.status(401).json({ error: message }); // Use 401 (Unauthorized) for login errors
+    res.status(401).json({ error: message }); 
   }
 };
 
@@ -105,21 +111,14 @@ exports.currentData = async (req, res) => {
 
 exports.allData = async (req, res) => {
   try {
-    userSchema
-      .find()
-      .then((data) => {
-        res.status(200).send({
-          data: data,
-        });
-      })
-      .catch((error) => {
-        res.status(500).send({
-          error: `Error al buscar usuarios: ${error}`,
-        });
-      });
+    const users = await userService.getAllUsers(); 
+
+    res.status(200).json({
+      data: users,
+    });
   } catch (error) {
-    res.status(400).send({
-      error: `Error getting users ${error}`,
+    res.status(500).json({
+      error: `Error al obtener todos los usuarios: ${error.message}`,
     });
   }
 };

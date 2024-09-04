@@ -5,6 +5,8 @@ const carritoSchema = require("#M/carrito.model");
 const ticketSchema = require("#M/ticket.model");
 const Factura = require("#M/factura.model");
 
+const CarritoService = require("#S/carrito.services");
+
 const createCarritoSchema = yup.object().shape({
   nombre_cliente: yup.string().required("El nombre del cliente es requerido"),
   email: yup.string().required("El email del cliente es requerido"),
@@ -25,27 +27,20 @@ const add_productParamsSchema = yup.object().shape({
 exports.createCarrito = async (req, res) => {
   try {
     await createCarritoSchema.validate(req.body);
-    let newCarrito = new carritoSchema({
+
+    const carritoData = {
       code: uuidv4(),
       nombre_cliente: req.body.nombre_cliente,
       email: req.body.email,
       date: req.body.date,
-    });
+    };
 
-    newCarrito
-      .save()
-      .then((data) => {
-        res.status(201).json({ data: data });
-      })
-      .catch((error) => {
-        res
-          .status(400)
-          .json({ error: `Error al registrar el carrito: ${error}` });
-        return;
-      });
+    const createdCarrito = await CarritoService.createCarrito(carritoData); // Call the service
+
+    res.status(201).json({ data: createdCarrito }); // Return the created carrito
   } catch (error) {
     res.status(400).send({
-      error: `Error creating carrito ${error}`,
+      error: `Error creating carrito: ${error.message}`,
     });
   }
 };
@@ -53,22 +48,16 @@ exports.createCarrito = async (req, res) => {
 exports.deleteCarrito = async (req, res) => {
   try {
     const params = await deleteCarritoSchema.validate(req.params);
-    carritoSchema
-      .deleteOne({
-        code: params.code,
-      })
-      .then((data) => {
-        res.status(200).json({ data: data });
-      })
-      .catch((error) => {
-        res
-          .status(400)
-          .json({ error: `Error al eliminar el carrito: ${error}` });
-        return;
-      });
+
+    const deletedCarrito = await CarritoService.deleteCarrito(params.code); // Call the service
+
+    res.status(200).json({
+      message: "Carrito eliminado",
+      data: deletedCarrito,
+    });
   } catch (error) {
     res.status(400).send({
-      error: `Error deleting carrito ${error}`,
+      error: `Error deleting carrito: ${error.message}`,
     });
   }
 };
@@ -127,22 +116,16 @@ exports.addProduct = async (req, res) => {
 
 exports.getCarrito = async (req, res) => {
   try {
-    await req.body;
-    carritoSchema
-      .findOne({
-        code: req.params.code,
-      })
-      .populate({
-        path: "products.product_code",
-        select: "-__v",
-      })
+    const { code } = req.params;
 
-      .then((data) => {
-        res.status(200).json({ data: data });
-      });
+    const carrito = await CarritoService.getCarritoByCode(code);
+
+    res.status(200).json({
+      data: carrito,
+    });
   } catch (error) {
     res.status(400).send({
-      error: `Error getting carritos ${error}`,
+      error: `Error getting carrito: ${error.message}`,
     });
   }
 };
