@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const { generateToken, verifyToken } = require("#U/jwt");
 
 const emailer = require("#S/email");
+const { userService, authService } = require("#S/users.services");
 
 const userSchema = require("#M/user.model");
 
@@ -14,33 +15,30 @@ const loginSchema = yup.object().shape({
 
 exports.registerUser = async (req, res) => {
   try {
-    const hashedpass = crypto
-      .createHash("sha512")
-      .update(req.body.password)
-      .digest("hex");
-
-    const newUser = new userSchema({
+    const userData = { // Create a user data object
       first_name: req.body.first_name,
       last_name: req.body.last_name,
       age: req.body.age,
       email: req.body.email,
-      password: hashedpass,
+      password: req.body.password,
       role: req.body.role,
-    });
+    };
 
-    const savedUser = await newUser.save();
+    const savedUser = await userService.registerUser(userData);
 
     res.status(201).json({
       data: savedUser,
     });
 
-    const inforesponse = await emailer.sendEmail({ to: savedUser.email, userName: `${savedUser.first_name} ${savedUser.last_name}` } ).catch(() => {
+    const inforesponse = await emailer.sendEmail({
+      to: savedUser.email,
+      userName: `${savedUser.first_name} ${savedUser.last_name}`,
+    }).catch(() => {
       res
         .status(500)
         .json({ error: `Error al enviar el correo de verificación` });
     });
 
-    console.log("Message sent: %s", inforesponse);
 
   } catch (error) {
     res
@@ -51,50 +49,27 @@ exports.registerUser = async (req, res) => {
 
 exports.loginUsers = async (req, res) => {
   try {
-    await loginSchema.validate(req.body);
+    await loginSchema.validate(req.body); // Assuming validation is still needed
 
-    let hashedpass = crypto
-      .createHash("sha512")
-      .update(req.body.password)
-      .digest("hex");
+    const { email, password } = req.body; // Destructuring for cleaner code
 
-    userSchema
-      .findOne({
-        email: req.body.email,
-        password: hashedpass,
-      })
-      .then((data) => {
-        let response = {
-          token: null,
-          msg: "Inicio exitoso.",
-        };
+    const { token, user } = await authService.loginUser(email, password); // Call the service
 
-        if (data !== null) {
-          response.token = jwt.sign(
-            {
-              id: data._id,
-              email: data.email,
-            },
-            "__recret__",
-            { expiresIn: "12h" }
-          );
-        }
-        const token = generateToken({ email: data.email, role: data.role });
-        res.cookie("currentUser", token, { maxAge: 18000000 });
+    res.cookie('currentUser', token, { maxAge: 18000000 }); // Set cookie
 
-        res.status(200).send({
-          data: response,
-        });
-      })
-      .catch((error) => {
-        res.status(500).send({
-          error: `Error al buscar usuario: ${error}`,
-        });
-      });
-  } catch (error) {
-    res.status(400).send({
-      error: `Error getting users ${error}`,
+    res.status(200).json({
+      data: {
+        message: 'Inicio exitoso.',
+        token,
+        user, // You can choose whether to return the user object or not based on your security requirements
+      },
     });
+  } catch (error) {
+    let message = 'Error al iniciar sesión.';
+    if (error.message === 'Invalid email or password') { // Handle specific error
+      message = 'Correo electrónico o contraseña incorrectos.';
+    }
+    res.status(401).json({ error: message }); // Use 401 (Unauthorized) for login errors
   }
 };
 

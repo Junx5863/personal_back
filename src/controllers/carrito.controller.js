@@ -108,7 +108,7 @@ exports.addProduct = async (req, res) => {
       await carrito.save();
     }
 
-    // Volver a popular el carrito actualizado para incluir los detalles completos de los productos
+    // Volver a popular el carrito actualizado para incluir los detalles completos de los productospa
     carrito = await carrito.populate({
       path: "products.product_code",
       select: "-__v",
